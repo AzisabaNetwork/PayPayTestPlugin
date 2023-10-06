@@ -38,17 +38,22 @@ class PayPayTestPlugin : JavaPlugin() {
     fun startPollingPayment(player: UUID, id: String) {
         object : BukkitRunnable() {
             override fun run() {
-                val response = paymentApi.getCodesPaymentDetails(id)
-                if (response.resultInfo.code != "SUCCESS") {
-                    return
-                }
-                if (response.data.status != PaymentState.StatusEnum.CREATED) {
+                try {
+                    val response = paymentApi.getCodesPaymentDetails(id)
+                    if (response.resultInfo.code != "SUCCESS") {
+                        return cancel()
+                    }
+                    if (response.data.status != PaymentState.StatusEnum.CREATED) {
+                        cancel()
+                    }
+                    if (response.data.status == PaymentState.StatusEnum.COMPLETED) {
+                        Bukkit.getPlayer(player)
+                            ?.sendMessage("${ChatColor.GREEN}${response.data.orderDescription}の購入が完了しました！")
+                    }
+                } catch (e: Exception) {
                     cancel()
                 }
-                if (response.data.status == PaymentState.StatusEnum.COMPLETED) {
-                    Bukkit.getPlayer(player)?.sendMessage("${ChatColor.GREEN}${response.data.orderDescription}の購入が完了しました！")
-                }
             }
-        }.runTaskTimerAsynchronously(this, 20 * 3, 20 * 3)
+        }.runTaskTimerAsynchronously(this, 20 * 5, 20 * 5)
     }
 }
