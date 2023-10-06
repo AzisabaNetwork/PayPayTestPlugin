@@ -1,0 +1,7 @@
+name: PayPayTestPlugin
+main: net.azisaba.paypaytestplugin.PayPayTestPlugin
+version: test
+api-version: 1.13
+commands:
+  paypay:
+    permission: paypaytestplugin.paypay
